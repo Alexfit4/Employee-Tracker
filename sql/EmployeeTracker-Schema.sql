@@ -25,15 +25,7 @@ CREATE TABLE employee (
   last_name VARCHAR(30) NULL,
   role_id INT NULL,
   manager_id INT NULL,
-  FOREIGN KEY (role_id) REFERENCES department(id) NULL,
-  FOREIGN KEY (manager_id) REFERENCES department(id) NULL,
+  FOREIGN KEY (role_id) REFERENCES department(id),
+  FOREIGN KEY (manager_id) REFERENCES department(id),
   PRIMARY KEY (id)
 );
-
-INSERT INTO
-  employee (first_name, last_name)
-VALUES
-  ("Johnnie", 'Simpson'),
-  ("Amir", 'Ashtiany'),
-  ("Gabe", 'Johnson'),
-  ("Rachael", 'Wanke');
