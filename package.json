@@ -1,0 +1,24 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "Allows user to view, add, delete and update employees and managers roles and position.",
+  "main": "employeeTracker.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexfit4/Employee-Tracker.git"
+  },
+  "author": "Amir Klavuhn-Ashtiany",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alexfit4/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/Alexfit4/Employee-Tracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
