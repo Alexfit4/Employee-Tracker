@@ -8,6 +8,9 @@ VALUES
     ('Finance'),
     ('Legal');
 
+
+    
+
 INSERT INTO
     role (title, salary, department_id)
 VALUES
@@ -16,7 +19,10 @@ VALUES
     ('Lead Engineer', 150000, 1),
     ('Software Engineer', 120000, 1),
     ('Accountant', 125000, 3),
-    ('Legal Team Lead', 250000, 4),
+    ('Legal Team Lead', 250000, 4);
+
+
+
 INSERT INTO
     employee (first_name, last_name)
 VALUES

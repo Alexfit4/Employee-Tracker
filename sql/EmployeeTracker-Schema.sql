@@ -6,7 +6,7 @@ USE employee_trackerDB;
 
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(30) NULL,
+  department VARCHAR(30) NULL,
   PRIMARY KEY (id)
 );
 
@@ -29,3 +29,5 @@ CREATE TABLE employee (
   FOREIGN KEY (manager_id) REFERENCES department(id),
   PRIMARY KEY (id)
 );
+
+-- role.department_id = department.id
