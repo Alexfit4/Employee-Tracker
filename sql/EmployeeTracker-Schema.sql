@@ -31,3 +31,7 @@ CREATE TABLE employee (
 );
 
 -- role.department_id = department.id
+-- SELECT *
+-- FROM employee
+-- LEFT JOIN department
+-- ON employee.role_id = department.id;

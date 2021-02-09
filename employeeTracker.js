@@ -66,9 +66,11 @@ const runSearch = () => {
 		});
 };
 
+// * Searching all employees.
+
 const employeeSearch = () => {
 	const query =
-		"SELECT employee.id, employee.first_name,employee.last_name, role.title, department.department, role.salary, employee.manager_id FROM employee LEFT JOIN role ON role.id=employee.id LEFT JOIN department on role.department_id = department.id";
+		"SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department, role.salary, employee.manager_id	  FROM	employee LEFT JOIN role ON employee.role_id = role.id		LEFT JOIN department ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
@@ -77,12 +79,14 @@ const employeeSearch = () => {
 
 const employeeSearchDepartment = () => {
 	const query =
-		"SELECT department.name, employee.first_name, employee.last_name FROM employee JOIN department ON employee.id = department.id;";
+		"SELECT employee.id, employee.first_name,employee.last_name,  department.department FROM employee LEFT JOIN role ON role.id=employee.id LEFT JOIN department on role.department_id = department.id";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
 	connection.end();
 };
+
+//* Adding employee
 
 const addEmployee = () => {
 	inquirer
@@ -95,29 +99,27 @@ const addEmployee = () => {
 			{
 				name: "last",
 				type: "input",
-				message: "Employee's last name:"
+				message: "Employee's last name:",
 			},
-      {
-				name: "department",
+			{
+				name: "roleID",
 				type: "input",
-				message: "Employee's department number 1-4:"
+				message: "Employee's ID:",
 			},
-
 		])
 		.then((answer) => {
-      console.log(answer.first);
-			const query = `INSERT INTO employee (first_name, last_name) VALUES ('${answer.first}','${answer.last}')`
-      let mysql = 'SELECT * FROM employee'
-        connection.query(query, mysql, (err, res) => {
-        if (err) throw err;        
-          console.table(mysql);
-          employeeSearch()
-      
-        
-      });
+			console.log(answer.first);
+			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${answer.roleID})`;;
+			
+			connection.query(query, mysql, (err, res) => {
+				if (err) throw err;
+				console.table(mysql);
+				employeeSearch();
+			});
 		});
-	
 };
 
 // ALTER TABLE employee
 // ADD first_name datatype;
+
+// * add employee first name and last name,
