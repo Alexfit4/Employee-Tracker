@@ -29,9 +29,11 @@ const runSearch = () => {
 			message: "What would you like to do?",
 			choices: [
 				"View All Employees",
-				"View All Employees by Department",
-				"View All Employees by Manager",
+				"View All Department",
+				"View All Roles",
 				"Add Employee",
+				"Add Department",
+				"Add Roles",
 				"Remove Employee",
 				"Update Employee Role",
 				"Update Employee Role",
@@ -43,21 +45,25 @@ const runSearch = () => {
 					employeeSearch();
 					break;
 
-				case "View All Employees by Department":
-					employeeSearchDepartment();
+				case "View All Department":
+					viewDepartments();
+					break;
+
+				case "View All Roles":
+					viewRoles();
 					break;
 
 				case "Add Employee":
 					addEmployee();
 					break;
 
-				//   case 'Search for a specific song':
-				//     songSearch();
-				//     break;
+				case "Add Department":
+					addDepartment();
+					break;
 
-				//   case 'Find artists with a top song and top album in the same year':
-				//     songAndAlbumSearch();
-				//     break;
+				case "Add Roles":
+					addRole();
+					break;
 
 				default:
 					console.log(`Invalid action: ${answer.action}`);
@@ -77,9 +83,16 @@ const employeeSearch = () => {
 	connection.end();
 };
 
-const employeeSearchDepartment = () => {
-	const query =
-		"SELECT employee.id, employee.first_name,employee.last_name,  department.department FROM employee LEFT JOIN role ON role.id=employee.id LEFT JOIN department on role.department_id = department.id";
+const viewDepartments = () => {
+	const query = "SELECT * FROM department";
+	connection.query(query, (err, res) => {
+		console.table(res);
+	});
+	connection.end();
+};
+
+const viewRoles = () => {
+	const query = "SELECT * FROM role";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
@@ -109,8 +122,8 @@ const addEmployee = () => {
 		])
 		.then((answer) => {
 			console.log(answer.first);
-			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${answer.roleID})`;;
-			
+			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${answer.roleID})`;
+
 			connection.query(query, mysql, (err, res) => {
 				if (err) throw err;
 				console.table(mysql);
@@ -119,7 +132,52 @@ const addEmployee = () => {
 		});
 };
 
-// ALTER TABLE employee
-// ADD first_name datatype;
+const addDepartment = () => {
+	inquirer
+		.prompt([
+			{
+				name: "department",
+				type: "input",
+				message: "Add Department name:",
+			},
+		])
+		.then((answer) => {
+			let query = `INSERT INTO department (department) VALUES ('${answer.department}')`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewDepartments();
+			});
+		});
+};
+
+const addRole = () => {
+	inquirer
+		.prompt([
+			{
+				name: "role",
+				type: "input",
+				message: "Add role name:",
+			},
+			{
+				name: "salary",
+				type: "input",
+				message: "Add Role Salary:",
+			},
+			{
+				name: "salary",
+				type: "input",
+				message: "Add Department ID:",
+			},
+		])
+		.then((answer) => {
+			let query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}), '${salary.department_id}'`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewRoles();
+			});
+		});
+};
 
 // * add employee first name and last name,
