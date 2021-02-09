@@ -36,7 +36,6 @@ const runSearch = () => {
 				"Add Roles",
 				"Remove Employee",
 				"Update Employee Role",
-				"Update Employee Role",
 			],
 		})
 		.then((answer) => {
@@ -63,6 +62,9 @@ const runSearch = () => {
 
 				case "Add Roles":
 					addRole();
+					break;
+				case "Update Employee Role":
+					updateRole();
 					break;
 
 				default:
@@ -205,5 +207,39 @@ const addRole = () => {
 		});
 };
 
-//*
+//* Update Employee Role
+const updateRole = () => {
+	const query = "SELECT * FROM role";
+	let nameArr = [];
+	connection.query(query, (err, res) => {	
+		res.forEach((name) => {	
+			nameArr.push(name.title);
+		});
+		console.log(nameArr);
+	});
+	inquirer
+		.prompt([
+			{
+				name: "update",
+				type: "input",
+				message: "What is the name of the new role?",
+			},	
+			{
+				name: "employee",
+				type: "rawlist",
+				message: "Which Emloyee's role would you like to update?:",
+				choices: nameArr,
+				
+			},	
+		])
+		.then((answer) => {
+			let query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${answer.departmentID})`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewRoles();
+			});
+		});
+};
+
 
