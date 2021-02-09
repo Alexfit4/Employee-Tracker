@@ -72,17 +72,18 @@ const runSearch = () => {
 		});
 };
 
-// * Searching all employees.
+// * View all employees.
 
 const employeeSearch = () => {
 	const query =
-		"SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department, role.salary, employee.manager_id	  FROM	employee LEFT JOIN role ON employee.role_id = role.id		LEFT JOIN department ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id";
+		"SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department, role.salary, CONCAT(e.first_name, ' ', e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
 	connection.end();
 };
 
+//* View all Departments
 const viewDepartments = () => {
 	const query = "SELECT * FROM department";
 	connection.query(query, (err, res) => {
@@ -91,6 +92,7 @@ const viewDepartments = () => {
 	connection.end();
 };
 
+// * View all Roles
 const viewRoles = () => {
 	const query = "SELECT * FROM role";
 	connection.query(query, (err, res) => {
@@ -102,6 +104,18 @@ const viewRoles = () => {
 //* Adding employee
 
 const addEmployee = () => {
+	const query = "SELECT * FROM role";
+	let newArr = [];
+	let conversions = {};
+	connection.query(query, (err, res) => {
+	
+		res.forEach((role) => {	
+			const string = `${role.id}: ${role.title}`
+			conversions[string] = role.id; 		
+			newArr.push(string);
+		});
+		
+	});
 	inquirer
 		.prompt([
 			{
@@ -116,21 +130,27 @@ const addEmployee = () => {
 			},
 			{
 				name: "roleID",
-				type: "input",
+				type: "rawlist",
 				message: "Employee's ID:",
+				choices: newArr
 			},
 		])
 		.then((answer) => {
-			console.log(answer.first);
-			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${answer.roleID})`;
+			console.log(answer);
+			console.log(newArr);
+			console.log(answer.roleID);
+			console.log(conversions[answer.roleID]); 
+			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${conversions[answer.roleID]})`;
 
-			connection.query(query, mysql, (err, res) => {
+			connection.query(query, (err, res) => {
 				if (err) throw err;
-				console.table(mysql);
+				
 				employeeSearch();
 			});
 		});
 };
+
+//* Add Department
 
 const addDepartment = () => {
 	inquirer
@@ -142,7 +162,10 @@ const addDepartment = () => {
 			},
 		])
 		.then((answer) => {
-			let query = `INSERT INTO department (department) VALUES ('${answer.department}')`;
+			let query = `INSERT INTO department (department) VALUES ('${answer.department}')
+			`;
+
+			query +=
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
@@ -151,11 +174,13 @@ const addDepartment = () => {
 		});
 };
 
+
+//* Add Role
 const addRole = () => {
 	inquirer
 		.prompt([
 			{
-				name: "role",
+				name: "title",
 				type: "input",
 				message: "Add role name:",
 			},
@@ -165,13 +190,13 @@ const addRole = () => {
 				message: "Add Role Salary:",
 			},
 			{
-				name: "salary",
+				name: "departmentID",
 				type: "input",
 				message: "Add Department ID:",
 			},
 		])
 		.then((answer) => {
-			let query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}), '${salary.department_id}'`;
+			let query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${answer.departmentID})`;
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
@@ -180,4 +205,5 @@ const addRole = () => {
 		});
 };
 
-// * add employee first name and last name,
+//*
+

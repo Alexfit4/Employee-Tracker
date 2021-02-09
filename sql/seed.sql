@@ -28,3 +28,4 @@ VALUES
     ("Michael", "Brown", 1, null),
     ("Bobby", "Jackson", 2, null);
 
+-- First make department, then add role correspoding to department
