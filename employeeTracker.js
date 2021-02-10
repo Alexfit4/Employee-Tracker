@@ -37,6 +37,7 @@ const runSearch = () => {
 				"Add Department",
 				"Add Roles",
 				"Remove Employee",
+				"Remove Role",
 				"Update Employee Role",
 			],
 		})
@@ -75,6 +76,9 @@ const runSearch = () => {
 				case "Remove Employee":
 					deleteNames();
 					break;
+				case "Remove Role":
+					deleteRole();
+					break;
 
 				default:
 					console.log(`Invalid action: ${answer.action}`);
@@ -99,7 +103,7 @@ const viewDepartments = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	connection.end();
+	
 };
 
 // * View all Roles
@@ -108,7 +112,7 @@ const viewRoles = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	connection.end();
+	
 };
 
 //* Adding employee
@@ -288,6 +292,50 @@ const deleteNames = () => {
 			connection.query(query, (err, res) => {
 				if (err) throw err;
 				employeeSearch();
+				connection.end();
+			});
+		});
+  }, function cancelled() {
+    connection.end();
+  });
+
+
+
+	
+};
+
+
+//* Delete Role
+const deleteRole = () => {
+
+	const query = "SELECT * FROM role";
+	let newArr = [];
+	connection.query(query, (err, res) => {
+		res.forEach((role) => {
+			const string = `${role.id}: ${role.title}`;
+			newArr.push(string);
+		});
+	});
+
+
+	confirm('Delete a role?')
+  .then(function confirmed() {
+    inquirer
+		.prompt([
+			{
+				name: "roleD",
+				type: "rawlist",
+				message: "Roles:",
+				choices: newArr,
+			},
+		])
+		.then((answer) => {
+			console.log(answer.roleD[0]);
+			const query = `DELETE FROM role WHERE id = '${answer.roleD[0]}'`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewRoles();
 				connection.end();
 			});
 		});
