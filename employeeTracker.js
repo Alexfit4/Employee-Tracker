@@ -4,13 +4,11 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const confirm = require("inquirer-confirm");
 
-
 //* Connection
 const connection = mysql.createConnection({
 	host: "localhost",
 
 	port: 3306,
-
 
 	user: "root",
 
@@ -20,36 +18,52 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
 	if (err) throw err;
+	console.log(`╔═════════════════════════════════════════════════════╗
+║                                                     ║
+║     ___                 _                         ║
+║    | _| _ __  _ _ | | __  _   _  _  _   ║
+║    |  | | ' \` _ \\| '_ \\| |/ _ \\| | | |/ _ \\/ _ \\  ║
+║    | |_| | | | | | |) | | () | || |  _/  __/  ║
+║    |__|| || || ._/||\\__/ \\, |\\_|\\__|  ║
+║                    ||            |__/             ║
+║                                                     ║
+║     _  _                                          ║
+║    |  \\/  | _ _ _ _   _ _  _ _  _ _ __        ║
+║    | |\\/| |/ \` | ' \\ / \` |/ _\` |\/ _ \\ '_|       ║
+║    | |  | | (| | | | | (| | (| |  _/ |          ║
+║    ||  ||\\_,|| ||\\_,|\\_, |\\_||          ║
+║                              |_/                  ║
+║                                                     ║
+\╚═════════════════════════════════════════════════════╝`)
 	runSearch();
 });
 
-
-//* Starter Questions. 
+//* Starter Questions.
 const runSearch = () => {
 	inquirer
 		.prompt({
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to do?",
-			choices: [
-				"View Data",
-				"Add Data",
-				"Remove Data",
-			],
+			choices: ["View Data", "Add Data", "Remove Data", "Update Data", "View Total Revenue"],
 		})
 		.then((answer) => {
 			switch (answer.action) {
 				case "View Data":
 					viewData();
 					break;
-
 				case "Add Data":
 					addData();
 					break;
 				case "Remove Data":
 					deleteData();
 					break;
-
+				case "Update Data":
+					updateData();
+					break;
+				case "View Total Revenue":
+					totalSum();
+					break;
 				default:
 					console.log(`Invalid action: ${answer.action}`);
 					break;
@@ -86,7 +100,7 @@ const viewRoles = () => {
 //* View by Managers
 const viewManagers = () => {
 	const query =
-		"SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
+		"SELECT CONCAT(first_name, ' ', last_name) AS Manager FROM employee WHERE employee.manager_id IS NOT NULL";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
@@ -198,7 +212,6 @@ const updateRole = () => {
 		res.forEach((name) => {
 			nameArr.push(name.title);
 		});
-		
 	});
 	inquirer
 		.prompt([
@@ -225,6 +238,65 @@ const updateRole = () => {
 			connection.query(query, (err, res) => {
 				if (err) throw err;
 				viewRoles();
+			});
+		});
+};
+
+//* Update Mangagers
+const updateManagers = () => {
+	const query = "Select * from employee where manager_id";
+	let firstNameArr = [];
+	let lastNameArr = []
+	connection.query(query, (err, res) => {
+		res.forEach((name) => {
+			  firstNameArr.push(name.first_name)
+			 
+			 lastNameArr.push(name.last_name)
+		});
+		
+	});
+	console.log(firstNameArr);
+	inquirer
+		.prompt([
+			{
+				name: "test",
+				type: "input",
+				message: "First pick the Employee's first name",
+			},
+			{
+				name: "first",
+				type: "rawlist",
+				message: "Employee's first name:",
+				choices: firstNameArr,
+			},
+			{
+				name: "test2",
+				type: "input",
+				message: "Then pick the Employee's last name",
+			},
+			{
+				name: "last",
+				type: "rawlist",
+				message: "Employee's last name:",
+				choices: lastNameArr,
+			},
+			{
+				name: "updateFirst",
+				type: "input",
+				message: "Update first name",
+			},
+			{
+				name: "updatelast",
+				type: "input",
+				message: "Update last name",
+			},
+		])
+		.then((answer) => {
+			let query = `UPDATE employee SET first_Name = '${answer.updateFirst}', last_name = '${answer.updatelast}' WHERE first_name = '${answer.first}' AND last_name = '${answer.last}'`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewManagers();
 			});
 		});
 };
@@ -307,6 +379,14 @@ const deleteRole = () => {
 	);
 };
 
+//* Vew Total Sum
+const totalSum = () => {
+	const query = "SELECT department.department, SUM(salary) AS TotalItemsOrdered FROM role	LEFT JOIN department ON role.department_id = department.id 	GROUP BY department_id";
+	connection.query(query, (err, res) => {
+		console.table(res);
+	});
+};
+
 //* Delete Department
 const deleteDepartment = () => {
 	const query = "SELECT * FROM department";
@@ -346,8 +426,6 @@ const deleteDepartment = () => {
 	);
 };
 
-
-
 //* Delete Data
 const deleteData = () => {
 	inquirer
@@ -355,11 +433,7 @@ const deleteData = () => {
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to Remove?",
-			choices: [
-				"Remove Employee",
-				"Remove Role",
-				"Remove Department",
-			],
+			choices: ["Remove Employee", "Remove Role", "Remove Department"],
 		})
 		.then((answer) => {
 			switch (answer.action) {
@@ -380,19 +454,14 @@ const deleteData = () => {
 		});
 };
 
-//* View Data. 
+//* View Data.
 const viewData = () => {
 	inquirer
 		.prompt({
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to view?",
-			choices: [
-				"Employees",
-				"Department",
-				"Roles",
-				"Managers"
-			],
+			choices: ["Employees", "Department", "Roles", "Managers"],
 		})
 		.then((answer) => {
 			switch (answer.action) {
@@ -418,7 +487,6 @@ const viewData = () => {
 		});
 };
 
-
 //*Add Data
 const addData = () => {
 	inquirer
@@ -430,7 +498,6 @@ const addData = () => {
 				"Add Employee",
 				"Add Department",
 				"Add Roles",
-				"Update Employee Role",
 			],
 		})
 		.then((answer) => {
@@ -446,8 +513,33 @@ const addData = () => {
 				case "Add Roles":
 					addRole();
 					break;
+
+				default:
+					console.log(`Invalid action: ${answer.action}`);
+					break;
+			}
+		});
+};
+
+//* Update Data
+const updateData = () => {
+	inquirer
+		.prompt({
+			name: "action",
+			type: "rawlist",
+			message: "What would you like to add?",
+			choices: [
+				"Update Employee Role",
+				"Update Managers",
+			],
+		})
+		.then((answer) => {
+			switch (answer.action) {
 				case "Update Employee Role":
 					updateRole();
+					break;
+				case "Update Managers":
+					updateManagers();
 					break;
 				default:
 					console.log(`Invalid action: ${answer.action}`);
