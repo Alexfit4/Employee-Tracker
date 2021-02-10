@@ -1,6 +1,7 @@
 const cTable = require("console.table");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const confirm = require('inquirer-confirm')
 
 const connection = mysql.createConnection({
 	host: "localhost",
@@ -258,6 +259,7 @@ const updateRole = () => {
 
 //* Delete Employee
 const deleteNames = () => {
+
 	const query = "SELECT * FROM employee";
 	let newArr = [];
 	connection.query(query, (err, res) => {
@@ -266,13 +268,12 @@ const deleteNames = () => {
 			newArr.push(string);
 		});
 	});
-	inquirer
+
+
+	confirm('Delete an Employee?')
+  .then(function confirmed() {
+    inquirer
 		.prompt([
-			{
-				name: "first",
-				type: "input",
-				message: "Which Employee would you like to delete?",
-			},
 			{
 				name: "nameD",
 				type: "rawlist",
@@ -290,4 +291,11 @@ const deleteNames = () => {
 				connection.end();
 			});
 		});
+  }, function cancelled() {
+    connection.end();
+  });
+
+
+
+	
 };
