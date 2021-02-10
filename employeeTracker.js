@@ -1,18 +1,19 @@
+//* Required Modules/Packages
 const cTable = require("console.table");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const confirm = require('inquirer-confirm')
+const confirm = require("inquirer-confirm");
 
+
+//* Connection
 const connection = mysql.createConnection({
 	host: "localhost",
 
-	// Your port; if not 3306
 	port: 3306,
 
-	// Your username
+
 	user: "root",
 
-	// Be sure to update with your own MySQL password!
 	password: "password",
 	database: "employee_trackerDB",
 });
@@ -22,6 +23,8 @@ connection.connect((err) => {
 	runSearch();
 });
 
+
+//* Starter Questions. 
 const runSearch = () => {
 	inquirer
 		.prompt({
@@ -107,7 +110,6 @@ const viewDepartments = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	
 };
 
 // * View all Roles
@@ -116,7 +118,16 @@ const viewRoles = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	
+};
+
+//* View by Managers
+const viewManagers = () => {
+	const query =
+		"SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
+	connection.query(query, (err, res) => {
+		console.table(res);
+	});
+	connection.end();
 };
 
 //* Adding employee
@@ -162,16 +173,6 @@ const addEmployee = () => {
 				employeeSearch();
 			});
 		});
-};
-
-//* View by Managers
-const viewManagers = () => {
-	const query =
-		"SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
-	connection.query(query, (err, res) => {
-		console.table(res);
-	});
-	connection.end();
 };
 
 //* Add Department
@@ -267,7 +268,6 @@ const updateRole = () => {
 
 //* Delete Employee
 const deleteNames = () => {
-
 	const query = "SELECT * FROM employee";
 	let newArr = [];
 	connection.query(query, (err, res) => {
@@ -277,41 +277,36 @@ const deleteNames = () => {
 		});
 	});
 
+	confirm("Delete an Employee?").then(
+		function confirmed() {
+			inquirer
+				.prompt([
+					{
+						name: "nameD",
+						type: "rawlist",
+						message: "Employee's:",
+						choices: newArr,
+					},
+				])
+				.then((answer) => {
+					console.log(answer.nameD[0]);
+					const query = `DELETE FROM employee WHERE id = '${answer.nameD[0]}'`;
 
-	confirm('Delete an Employee?')
-  .then(function confirmed() {
-    inquirer
-		.prompt([
-			{
-				name: "nameD",
-				type: "rawlist",
-				message: "Employee's:",
-				choices: newArr,
-			},
-		])
-		.then((answer) => {
-			console.log(answer.nameD[0]);
-			const query = `DELETE FROM employee WHERE id = '${answer.nameD[0]}'`;
-
-			connection.query(query, (err, res) => {
-				if (err) throw err;
-				employeeSearch();
-				connection.end();
-			});
-		});
-  }, function cancelled() {
-    connection.end();
-  });
-
-
-
-	
+					connection.query(query, (err, res) => {
+						if (err) throw err;
+						employeeSearch();
+						connection.end();
+					});
+				});
+		},
+		function cancelled() {
+			connection.end();
+		}
+	);
 };
-
 
 //* Delete Role
 const deleteRole = () => {
-
 	const query = "SELECT * FROM role";
 	let newArr = [];
 	connection.query(query, (err, res) => {
@@ -321,37 +316,36 @@ const deleteRole = () => {
 		});
 	});
 
+	confirm("Delete a role?").then(
+		function confirmed() {
+			inquirer
+				.prompt([
+					{
+						name: "roleD",
+						type: "rawlist",
+						message: "Roles:",
+						choices: newArr,
+					},
+				])
+				.then((answer) => {
+					console.log(answer.roleD[0]);
+					const query = `DELETE FROM role WHERE id = '${answer.roleD[0]}'`;
 
-	confirm('Delete a role?')
-  .then(function confirmed() {
-    inquirer
-		.prompt([
-			{
-				name: "roleD",
-				type: "rawlist",
-				message: "Roles:",
-				choices: newArr,
-			},
-		])
-		.then((answer) => {
-			console.log(answer.roleD[0]);
-			const query = `DELETE FROM role WHERE id = '${answer.roleD[0]}'`;
-
-			connection.query(query, (err, res) => {
-				if (err) throw err;
-				viewRoles();
-				connection.end();
-			});
-		});
-  }, function cancelled() {
-    connection.end();
-  });
-	
+					connection.query(query, (err, res) => {
+						if (err) throw err;
+						viewRoles();
+						connection.end();
+					});
+				});
+		},
+		function cancelled() {
+			connection.end();
+		}
+	);
 };
 
 //* Delete Department
 const deleteDepartment = () => {
-
 	const query = "SELECT * FROM department";
 	let newArr = [];
 	connection.query(query, (err, res) => {
@@ -361,33 +355,30 @@ const deleteDepartment = () => {
 		});
 	});
 
+	confirm("Delete a Department?").then(
+		function confirmed() {
+			inquirer
+				.prompt([
+					{
+						name: "departmentD",
+						type: "rawlist",
+						message: "Departments:",
+						choices: newArr,
+					},
+				])
+				.then((answer) => {
+					console.log(answer.departmentD[0]);
+					const query = `DELETE FROM department WHERE id = '${answer.departmentD[0]}'`;
 
-	confirm('Delete a Department?')
-  .then(function confirmed() {
-    inquirer
-		.prompt([
-			{
-				name: "departmentD",
-				type: "rawlist",
-				message: "Departments:",
-				choices: newArr,
-			},
-		])
-		.then((answer) => {
-			console.log(answer.departmentD[0]);
-			const query = `DELETE FROM department WHERE id = '${answer.departmentD[0]}'`;
-
-			connection.query(query, (err, res) => {
-				if (err) throw err;
-				viewDepartments();
-				connection.end();
-			});
-		});
-  }, function cancelled() {
-    connection.end();
-  });
-
-
-
-	
+					connection.query(query, (err, res) => {
+						if (err) throw err;
+						viewDepartments();
+						connection.end();
+					});
+				});
+		},
+		function cancelled() {
+			connection.end();
+		}
+	);
 };
