@@ -32,59 +32,22 @@ const runSearch = () => {
 			type: "rawlist",
 			message: "What would you like to do?",
 			choices: [
-				"View All Employees",
-				"View All Department",
-				"View All Roles",
-				"View All Managers",
-				"Add Employee",
-				"Add Department",
-				"Add Roles",
-				"Remove Employee",
-				"Remove Role",
-				"Remove Department",
-				"Update Employee Role",
+				"View Data",
+				"Add Data",
+				"Remove Data",
 			],
 		})
 		.then((answer) => {
 			switch (answer.action) {
-				case "View All Employees":
-					employeeSearch();
+				case "View Data":
+					viewData();
 					break;
 
-				case "View All Department":
-					viewDepartments();
+				case "Add Data":
+					addData();
 					break;
-
-				case "View All Roles":
-					viewRoles();
-					break;
-
-				case "View All Managers":
-					viewManagers();
-					break;
-
-				case "Add Employee":
-					addEmployee();
-					break;
-
-				case "Add Department":
-					addDepartment();
-					break;
-
-				case "Add Roles":
-					addRole();
-					break;
-				case "Update Employee Role":
-					updateRole();
-					break;
-				case "Remove Employee":
-					deleteNames();
-					break;
-				case "Remove Role":
-					deleteRole();
-					break;
-				case "Remove Department":
-					deleteDepartment();
+				case "Remove Data":
+					deleteData();
 					break;
 
 				default:
@@ -214,7 +177,7 @@ const addRole = () => {
 			{
 				name: "departmentID",
 				type: "input",
-				message: "Add Department ID:",
+				message: "Add Department ID (matching with the Department ID):",
 			},
 		])
 		.then((answer) => {
@@ -381,4 +344,114 @@ const deleteDepartment = () => {
 			connection.end();
 		}
 	);
+};
+
+
+
+//* Delete Data
+const deleteData = () => {
+	inquirer
+		.prompt({
+			name: "action",
+			type: "rawlist",
+			message: "What would you like to Remove?",
+			choices: [
+				"Remove Employee",
+				"Remove Role",
+				"Remove Department",
+			],
+		})
+		.then((answer) => {
+			switch (answer.action) {
+				case "Remove Employee":
+					deleteNames();
+					break;
+				case "Remove Role":
+					deleteRole();
+					break;
+				case "Remove Department":
+					deleteDepartment();
+					break;
+
+				default:
+					console.log(`Invalid action: ${answer.action}`);
+					break;
+			}
+		});
+};
+
+//* View Data. 
+const viewData = () => {
+	inquirer
+		.prompt({
+			name: "action",
+			type: "rawlist",
+			message: "What would you like to view?",
+			choices: [
+				"Employees",
+				"Department",
+				"Roles",
+				"Managers"
+			],
+		})
+		.then((answer) => {
+			switch (answer.action) {
+				case "Employees":
+					employeeSearch();
+					break;
+
+				case "Department":
+					viewDepartments();
+					break;
+
+				case "Roles":
+					viewRoles();
+					break;
+
+				case "Managers":
+					viewManagers();
+					break;
+				default:
+					console.log(`Invalid action: ${answer.action}`);
+					break;
+			}
+		});
+};
+
+
+//*Add Data
+const addData = () => {
+	inquirer
+		.prompt({
+			name: "action",
+			type: "rawlist",
+			message: "What would you like to add?",
+			choices: [
+				"Add Employee",
+				"Add Department",
+				"Add Roles",
+				"Update Employee Role",
+			],
+		})
+		.then((answer) => {
+			switch (answer.action) {
+				case "Add Employee":
+					addEmployee();
+					break;
+
+				case "Add Department":
+					addDepartment();
+					break;
+
+				case "Add Roles":
+					addRole();
+					break;
+				case "Update Employee Role":
+					updateRole();
+					break;
+				default:
+					console.log(`Invalid action: ${answer.action}`);
+					break;
+			}
+		});
 };
