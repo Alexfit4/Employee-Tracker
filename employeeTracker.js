@@ -31,6 +31,7 @@ const runSearch = () => {
 				"View All Employees",
 				"View All Department",
 				"View All Roles",
+				"View All Managers",
 				"Add Employee",
 				"Add Department",
 				"Add Roles",
@@ -52,6 +53,10 @@ const runSearch = () => {
 					viewRoles();
 					break;
 
+				case "View All Managers":
+					viewManagers();
+					break;
+
 				case "Add Employee":
 					addEmployee();
 					break;
@@ -65,6 +70,9 @@ const runSearch = () => {
 					break;
 				case "Update Employee Role":
 					updateRole();
+					break;
+				case "Remove Employee":
+					deleteNames();
 					break;
 
 				default:
@@ -82,7 +90,7 @@ const employeeSearch = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	connection.end();
+	
 };
 
 //* View all Departments
@@ -138,10 +146,6 @@ const addEmployee = () => {
 			},
 		])
 		.then((answer) => {
-			console.log(answer);
-			console.log(newArr);
-			console.log(answer.roleID);
-			console.log(conversions[answer.roleID]); 
 			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${conversions[answer.roleID]})`;
 
 			connection.query(query, (err, res) => {
@@ -150,6 +154,15 @@ const addEmployee = () => {
 				employeeSearch();
 			});
 		});
+};
+
+//* View by Managers
+const viewManagers = () => {
+	const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
+	connection.query(query, (err, res) => {
+		console.table(res);
+	});
+	connection.end();
 };
 
 //* Add Department
@@ -230,10 +243,16 @@ const updateRole = () => {
 				message: "Which Emloyee's role would you like to update?:",
 				choices: nameArr,
 				
-			},	
+			},
+			{
+				name: "salary",
+				type: "input",
+				message: "New salary for role.",
+			},
+
 		])
 		.then((answer) => {
-			let query = `INSERT INTO role (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${answer.departmentID})`;
+			let query = `UPDATE role SET title = '${answer.update}', salary = ${answer.salary} WHERE title = '${answer.employee}'`;
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
@@ -242,4 +261,35 @@ const updateRole = () => {
 		});
 };
 
+
+//* Delete Employee
+const deleteNames = () => {
+	const mysql = "SELECT * FROM employee";
+	employeeSearch()
+	inquirer
+		.prompt([
+			{
+				name: "firstName",
+				type: "input",
+				message: "Employee's first name to delete?",
+				
+			},
+			{
+				name: "lastName",
+				type: "input",
+				message: "Employee's last name to delete?",
+				
+			},
+
+		])
+		.then((answer) => {
+			const query = `DELETE FROM employee WHERE first_name = '${answer.firstName}' AND last_name = '${answer.lastName}'`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				employeeSearch()
+				connection.end()
+			});
+		});
+};
 
