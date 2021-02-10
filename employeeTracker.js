@@ -90,7 +90,6 @@ const employeeSearch = () => {
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
-	
 };
 
 //* View all Departments
@@ -118,13 +117,11 @@ const addEmployee = () => {
 	let newArr = [];
 	let conversions = {};
 	connection.query(query, (err, res) => {
-	
-		res.forEach((role) => {	
-			const string = `${role.id}: ${role.title}`
-			conversions[string] = role.id; 		
+		res.forEach((role) => {
+			const string = `${role.id}: ${role.title}`;
+			conversions[string] = role.id;
 			newArr.push(string);
 		});
-		
 	});
 	inquirer
 		.prompt([
@@ -142,15 +139,17 @@ const addEmployee = () => {
 				name: "roleID",
 				type: "rawlist",
 				message: "Employee's ID:",
-				choices: newArr
+				choices: newArr,
 			},
 		])
 		.then((answer) => {
-			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answer.first}','${answer.last}',${conversions[answer.roleID]})`;
+			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${
+				answer.first
+			}','${answer.last}',${conversions[answer.roleID]})`;
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
-				
+
 				employeeSearch();
 			});
 		});
@@ -158,7 +157,8 @@ const addEmployee = () => {
 
 //* View by Managers
 const viewManagers = () => {
-	const query = "SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
+	const query =
+		"SELECT CONCAT(e.first_name, ' ', e.last_name) AS Manager	FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department	ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id WHERE employee.manager_id IS NOT NULL";
 	connection.query(query, (err, res) => {
 		console.table(res);
 	});
@@ -180,15 +180,12 @@ const addDepartment = () => {
 			let query = `INSERT INTO department (department) VALUES ('${answer.department}')
 			`;
 
-			query +=
-
-			connection.query(query, (err, res) => {
+			query += connection.query(query, (err, res) => {
 				if (err) throw err;
 				viewDepartments();
 			});
 		});
 };
-
 
 //* Add Role
 const addRole = () => {
@@ -224,8 +221,8 @@ const addRole = () => {
 const updateRole = () => {
 	const query = "SELECT * FROM role";
 	let nameArr = [];
-	connection.query(query, (err, res) => {	
-		res.forEach((name) => {	
+	connection.query(query, (err, res) => {
+		res.forEach((name) => {
 			nameArr.push(name.title);
 		});
 		console.log(nameArr);
@@ -236,20 +233,18 @@ const updateRole = () => {
 				name: "update",
 				type: "input",
 				message: "What is the name of the new role?",
-			},	
+			},
 			{
 				name: "employee",
 				type: "rawlist",
 				message: "Which Emloyee's role would you like to update?:",
 				choices: nameArr,
-				
 			},
 			{
 				name: "salary",
 				type: "input",
 				message: "New salary for role.",
 			},
-
 		])
 		.then((answer) => {
 			let query = `UPDATE role SET title = '${answer.update}', salary = ${answer.salary} WHERE title = '${answer.employee}'`;
@@ -261,35 +256,38 @@ const updateRole = () => {
 		});
 };
 
-
 //* Delete Employee
 const deleteNames = () => {
-	const mysql = "SELECT * FROM employee";
-	employeeSearch()
+	const query = "SELECT * FROM employee";
+	let newArr = [];
+	connection.query(query, (err, res) => {
+		res.forEach((name) => {
+			const string = `${name.id}: ${name.first_name} ${name.last_name}`;
+			newArr.push(string);
+		});
+	});
 	inquirer
 		.prompt([
 			{
-				name: "firstName",
+				name: "first",
 				type: "input",
-				message: "Employee's first name to delete?",
-				
+				message: "Which Employee would you like to delete?",
 			},
 			{
-				name: "lastName",
-				type: "input",
-				message: "Employee's last name to delete?",
-				
+				name: "nameD",
+				type: "rawlist",
+				message: "Employee's:",
+				choices: newArr,
 			},
-
 		])
 		.then((answer) => {
-			const query = `DELETE FROM employee WHERE first_name = '${answer.firstName}' AND last_name = '${answer.lastName}'`;
+			console.log(answer.nameD[0]);
+			const query = `DELETE FROM employee WHERE id = '${answer.nameD[0]}'`;
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
-				employeeSearch()
-				connection.end()
+				employeeSearch();
+				connection.end();
 			});
 		});
 };
-
