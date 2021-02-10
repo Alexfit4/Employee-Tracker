@@ -235,7 +235,7 @@ const updateRole = () => {
 		res.forEach((name) => {
 			nameArr.push(name.title);
 		});
-		console.log(nameArr);
+		
 	});
 	inquirer
 		.prompt([
