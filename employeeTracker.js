@@ -38,6 +38,7 @@ const runSearch = () => {
 				"Add Roles",
 				"Remove Employee",
 				"Remove Role",
+				"Remove Department",
 				"Update Employee Role",
 			],
 		})
@@ -78,6 +79,9 @@ const runSearch = () => {
 					break;
 				case "Remove Role":
 					deleteRole();
+					break;
+				case "Remove Department":
+					deleteDepartment();
 					break;
 
 				default:
@@ -336,6 +340,46 @@ const deleteRole = () => {
 			connection.query(query, (err, res) => {
 				if (err) throw err;
 				viewRoles();
+				connection.end();
+			});
+		});
+  }, function cancelled() {
+    connection.end();
+  });
+	
+};
+
+//* Delete Department
+const deleteDepartment = () => {
+
+	const query = "SELECT * FROM department";
+	let newArr = [];
+	connection.query(query, (err, res) => {
+		res.forEach((department) => {
+			const string = `${department.id}: ${department.department}`;
+			newArr.push(string);
+		});
+	});
+
+
+	confirm('Delete a Department?')
+  .then(function confirmed() {
+    inquirer
+		.prompt([
+			{
+				name: "departmentD",
+				type: "rawlist",
+				message: "Departments:",
+				choices: newArr,
+			},
+		])
+		.then((answer) => {
+			console.log(answer.departmentD[0]);
+			const query = `DELETE FROM department WHERE id = '${answer.departmentD[0]}'`;
+
+			connection.query(query, (err, res) => {
+				if (err) throw err;
+				viewDepartments();
 				connection.end();
 			});
 		});
