@@ -34,8 +34,9 @@ connection.connect((err) => {
 ║    ||  ||\\_,|| ||\\_,|\\_, |\\_||          ║
 ║                              |_/                  ║
 ║                                                     ║
-\╚═════════════════════════════════════════════════════╝`)
-	runSearch();
+\╚═════════════════════════════════════════════════════╝`);
+
+runSearch()
 });
 
 //* Starter Questions.
@@ -45,7 +46,13 @@ const runSearch = () => {
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to do?",
-			choices: ["View Data", "Add Data", "Remove Data", "Update Data", "View Total Revenue"],
+			choices: [
+				"View Data",
+				"Add Data",
+				"Remove Data",
+				"Update Data",
+				"View Total Revenue",
+			],
 		})
 		.then((answer) => {
 			switch (answer.action) {
@@ -78,6 +85,7 @@ const employeeSearch = () => {
 		"SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department, role.salary, CONCAT(e.first_name, ' ', e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON department.id = role.department_id	LEFT JOIN employee e ON e.id = employee.manager_id";
 	connection.query(query, (err, res) => {
 		console.table(res);
+		runSearch();
 	});
 };
 
@@ -86,6 +94,7 @@ const viewDepartments = () => {
 	const query = "SELECT * FROM department";
 	connection.query(query, (err, res) => {
 		console.table(res);
+		
 	});
 };
 
@@ -94,6 +103,7 @@ const viewRoles = () => {
 	const query = "SELECT * FROM role";
 	connection.query(query, (err, res) => {
 		console.table(res);
+		runSearch();
 	});
 };
 
@@ -103,8 +113,8 @@ const viewManagers = () => {
 		"SELECT CONCAT(first_name, ' ', last_name) AS Manager FROM employee WHERE employee.manager_id IS NOT NULL";
 	connection.query(query, (err, res) => {
 		console.table(res);
+		runSearch();
 	});
-	connection.end();
 };
 
 //* Adding employee
@@ -143,11 +153,10 @@ const addEmployee = () => {
 			let query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${
 				answer.first
 			}','${answer.last}',${conversions[answer.roleID]})`;
-
 			connection.query(query, (err, res) => {
 				if (err) throw err;
 
-				employeeSearch();
+				runSearch();
 			});
 		});
 };
@@ -160,22 +169,23 @@ const addDepartment = () => {
 			{
 				name: "department",
 				type: "input",
-				message: "Add Department name:",
+				message: "Add Department name:"
 			},
 		])
 		.then((answer) => {
-			let query = `INSERT INTO department (department) VALUES ('${answer.department}')
+			const query = `INSERT INTO department (department) VALUES ('${answer.department}')
 			`;
 
-			query += connection.query(query, (err, res) => {
+			connection.query(query, (err, res) => {
 				if (err) throw err;
-				viewDepartments();
+				runSearch();
 			});
 		});
 };
 
 //* Add Role
 const addRole = () => {
+	viewDepartments()
 	inquirer
 		.prompt([
 			{
@@ -199,7 +209,8 @@ const addRole = () => {
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
-				viewRoles();
+
+				runSearch();
 			});
 		});
 };
@@ -237,7 +248,8 @@ const updateRole = () => {
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
-				viewRoles();
+
+				runSearch();
 			});
 		});
 };
@@ -246,16 +258,15 @@ const updateRole = () => {
 const updateManagers = () => {
 	const query = "Select * from employee where manager_id";
 	let firstNameArr = [];
-	let lastNameArr = []
+	let lastNameArr = [];
 	connection.query(query, (err, res) => {
 		res.forEach((name) => {
-			  firstNameArr.push(name.first_name)
-			 
-			 lastNameArr.push(name.last_name)
+			firstNameArr.push(name.first_name);
+
+			lastNameArr.push(name.last_name);
 		});
-		
 	});
-	console.log(firstNameArr);
+
 	inquirer
 		.prompt([
 			{
@@ -296,7 +307,8 @@ const updateManagers = () => {
 
 			connection.query(query, (err, res) => {
 				if (err) throw err;
-				viewManagers();
+
+				runSearch();
 			});
 		});
 };
@@ -324,18 +336,17 @@ const deleteNames = () => {
 					},
 				])
 				.then((answer) => {
-					console.log(answer.nameD[0]);
 					const query = `DELETE FROM employee WHERE id = '${answer.nameD[0]}'`;
 
 					connection.query(query, (err, res) => {
 						if (err) throw err;
-						employeeSearch();
-						connection.end();
+
+						runSearch();
 					});
 				});
 		},
 		function cancelled() {
-			connection.end();
+			runSearch();
 		}
 	);
 };
@@ -363,27 +374,28 @@ const deleteRole = () => {
 					},
 				])
 				.then((answer) => {
-					console.log(answer.roleD[0]);
 					const query = `DELETE FROM role WHERE id = '${answer.roleD[0]}'`;
 
 					connection.query(query, (err, res) => {
 						if (err) throw err;
-						viewRoles();
-						connection.end();
+
+						runSearch();
 					});
 				});
 		},
 		function cancelled() {
-			connection.end();
+			runSearch();
 		}
 	);
 };
 
 //* Vew Total Sum
 const totalSum = () => {
-	const query = "SELECT department.department, SUM(salary) AS TotalItemsOrdered FROM role	LEFT JOIN department ON role.department_id = department.id 	GROUP BY department_id";
+	const query =
+		"SELECT department.department, SUM(salary) AS TotalItemsOrdered FROM role	LEFT JOIN department ON role.department_id = department.id 	GROUP BY department_id";
 	connection.query(query, (err, res) => {
 		console.table(res);
+		runSearch();
 	});
 };
 
@@ -410,18 +422,17 @@ const deleteDepartment = () => {
 					},
 				])
 				.then((answer) => {
-					console.log(answer.departmentD[0]);
 					const query = `DELETE FROM department WHERE id = '${answer.departmentD[0]}'`;
 
 					connection.query(query, (err, res) => {
 						if (err) throw err;
-						viewDepartments();
-						connection.end();
+
+						runSearch();
 					});
 				});
 		},
 		function cancelled() {
-			connection.end();
+			runSearch();
 		}
 	);
 };
@@ -494,11 +505,7 @@ const addData = () => {
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to add?",
-			choices: [
-				"Add Employee",
-				"Add Department",
-				"Add Roles",
-			],
+			choices: ["Add Employee", "Add Department", "Add Roles"],
 		})
 		.then((answer) => {
 			switch (answer.action) {
@@ -528,10 +535,7 @@ const updateData = () => {
 			name: "action",
 			type: "rawlist",
 			message: "What would you like to add?",
-			choices: [
-				"Update Employee Role",
-				"Update Managers",
-			],
+			choices: ["Update Employee Role", "Update Managers"],
 		})
 		.then((answer) => {
 			switch (answer.action) {
