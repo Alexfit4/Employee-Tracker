@@ -7,7 +7,7 @@
 
 ## Video of 
 Video walkthrough of my app:
-- View Data: https://drive.google.com/file/d/1Yee1K_diBikTxmFrQENJVJx1dRUbhW8h/view
+- View Data: https://drive.google.com/file/d/1B74qUosYBObwcM7u8vmvDJkDalPHB0Nx/view
 - Add Data: https://drive.google.com/file/d/1PTCuFFOw_-SM_BuYJmDheZu15KwK0cG1/view
 - Update Data: https://drive.google.com/file/d/12PYNR-4RtoZUxgkODN13FF_IuYnUz-9X/view
 - View Total Revenue: https://drive.google.com/file/d/1_iZRLUVPPzRO2V1qGxGcKxWYp6dFlDHA/view
