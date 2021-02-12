@@ -36,7 +36,7 @@ connection.connect((err) => {
 ║                                                     ║
 \╚═════════════════════════════════════════════════════╝`);
 
-runSearch()
+	runSearch();
 });
 
 //* Starter Questions.
@@ -94,7 +94,6 @@ const viewDepartments = () => {
 	const query = "SELECT * FROM department";
 	connection.query(query, (err, res) => {
 		console.table(res);
-		
 	});
 };
 
@@ -169,7 +168,7 @@ const addDepartment = () => {
 			{
 				name: "department",
 				type: "input",
-				message: "Add Department name:"
+				message: "Add Department name:",
 			},
 		])
 		.then((answer) => {
@@ -185,7 +184,7 @@ const addDepartment = () => {
 
 //* Add Role
 const addRole = () => {
-	viewDepartments()
+	viewDepartments();
 	inquirer
 		.prompt([
 			{
@@ -223,35 +222,35 @@ const updateRole = () => {
 		res.forEach((name) => {
 			nameArr.push(name.title);
 		});
-	});
-	inquirer
-		.prompt([
-			{
-				name: "update",
-				type: "input",
-				message: "What is the name of the new role?",
-			},
-			{
-				name: "employee",
-				type: "rawlist",
-				message: "Which Emloyee's role would you like to update?:",
-				choices: nameArr,
-			},
-			{
-				name: "salary",
-				type: "input",
-				message: "New salary for role.",
-			},
-		])
-		.then((answer) => {
-			let query = `UPDATE role SET title = '${answer.update}', salary = ${answer.salary} WHERE title = '${answer.employee}'`;
+		inquirer
+			.prompt([
+				{
+					name: "employee",
+					type: "rawlist",
+					message: "Which Emloyee's role would you like to update?:",
+					choices: nameArr,
+				},
+				{
+					name: "update",
+					type: "input",
+					message: "What is the name of the new role?",
+				},
+				{
+					name: "salary",
+					type: "input",
+					message: "New salary for role.",
+				},
+			])
+			.then((answer) => {
+				let query = `UPDATE role SET title = '${answer.update}', salary = ${answer.salary} WHERE title = '${answer.employee}'`;
 
-			connection.query(query, (err, res) => {
-				if (err) throw err;
+				connection.query(query, (err, res) => {
+					if (err) throw err;
 
-				runSearch();
+					runSearch();
+				});
 			});
-		});
+	});
 };
 
 //* Update Mangagers
@@ -265,52 +264,41 @@ const updateManagers = () => {
 
 			lastNameArr.push(name.last_name);
 		});
-	});
+		inquirer
+			.prompt([
+				{
+					name: "first",
+					type: "rawlist",
+					message: "Employee's first name:",
+					choices: firstNameArr,
+				},
+				{
+					name: "last",
+					type: "rawlist",
+					message: "Employee's last name:",
+					choices: lastNameArr,
+				},
+				{
+					name: "updateFirst",
+					type: "input",
+					message: "Update first name",
+				},
+				{
+					name: "updatelast",
+					type: "input",
+					message: "Update last name",
+				},
+			])
+			.then((answer) => {
+				let query = `UPDATE employee SET first_Name = '${answer.updateFirst}', last_name = '${answer.updatelast}' WHERE first_name = '${answer.first}' AND last_name = '${answer.last}'`;
 
-	inquirer
-		.prompt([
-			{
-				name: "test",
-				type: "input",
-				message: "First pick the Employee's first name",
-			},
-			{
-				name: "first",
-				type: "rawlist",
-				message: "Employee's first name:",
-				choices: firstNameArr,
-			},
-			{
-				name: "test2",
-				type: "input",
-				message: "Then pick the Employee's last name",
-			},
-			{
-				name: "last",
-				type: "rawlist",
-				message: "Employee's last name:",
-				choices: lastNameArr,
-			},
-			{
-				name: "updateFirst",
-				type: "input",
-				message: "Update first name",
-			},
-			{
-				name: "updatelast",
-				type: "input",
-				message: "Update last name",
-			},
-		])
-		.then((answer) => {
-			let query = `UPDATE employee SET first_Name = '${answer.updateFirst}', last_name = '${answer.updatelast}' WHERE first_name = '${answer.first}' AND last_name = '${answer.last}'`;
+				connection.query(query, (err, res) => {
+					if (err) throw err;
 
-			connection.query(query, (err, res) => {
-				if (err) throw err;
-
-				runSearch();
+					runSearch();
+				});
 			});
-		});
+	});
 };
 
 //* Delete Employee
